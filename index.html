@@ -5,78 +5,83 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>乙級學科題庫線上測驗</title>
 <style>
-  :root{--blue:#1f5fa8;--blue-d:#174a84;--bg:#eef2f6;--line:#d5dce5;--text:#222;--muted:#666;--red:#c62828;--green:#2e7d32}
+  :root{--nav:#2b5797;--nav-d:#1c3d6e;--pale:#dfeaf7;--pale2:#eef4fb;--line:#8faacc;--text:#000;--red:#c00;--green:#060}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+  body{background:#fff;color:var(--text);font-family:"新細明體",PMingLiU,"Microsoft JhengHei","PingFang TC",serif;font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
   .view{display:none}.view.on{display:block}
-  .wrap{max-width:960px;margin:0 auto;padding:0 16px}
-  header.top{background:linear-gradient(180deg,#2a6fbe,var(--blue-d));color:#fff;padding:22px 0 18px;text-align:center}
-  header.top h1{margin:0;font-size:clamp(22px,5vw,30px);letter-spacing:2px}
-  header.top p{margin:6px 0 0;font-size:clamp(14px,3.6vw,18px);opacity:.95}
-  .card{background:#fff;border:1px solid var(--line);border-radius:8px;margin:16px 0;overflow:hidden}
-  .card h2{margin:0;padding:10px 14px;background:#e3ebf5;border-bottom:1px solid var(--line);font-size:17px;color:var(--blue-d)}
-  .list{list-style:none;margin:0;padding:0}
-  .list li{padding:12px 14px;border-bottom:1px dashed var(--line);color:#1a4f8b;font-size:15px}
-  .list li:last-child{border-bottom:0}
-  .list li.go{cursor:pointer;font-weight:bold;color:#0d47a1;background:#fffbe6}
-  .list li.go:active{background:#ffefb0}
-  .note{font-size:13px;color:var(--muted);padding:10px 14px}
-  .btn{display:inline-block;border:1px solid var(--blue-d);background:var(--blue);color:#fff;border-radius:6px;padding:10px 18px;font-size:16px;cursor:pointer;font-family:inherit;min-height:44px}
-  .btn:active{background:var(--blue-d)}
-  .btn.gray{background:#fff;color:var(--blue-d)}
-  .btn.red{background:var(--red);border-color:#9b1c1c}
+  .wrap{max-width:900px;margin:0 auto;padding:0 8px}
+  /* 傳統藍色導覽列 */
+  .navbar{background:linear-gradient(#3d6db3,var(--nav) 50%,var(--nav-d));border-bottom:2px solid #13294b;color:#fff;font-size:14px}
+  .navbar .wrap{display:flex;flex-wrap:wrap}
+  .navbar span{padding:7px 12px;border-right:1px solid #5b80b8;white-space:nowrap}
+  .navbar span:first-child{border-left:1px solid #5b80b8;font-weight:bold}
+  header.top{background:var(--pale);border-bottom:1px solid var(--line);text-align:center;padding:12px 0 10px}
+  header.top h1{margin:0;font-size:24px;color:#003;font-weight:bold}
+  header.top p{margin:4px 0 0;font-size:16px;color:#036}
+  .card{background:#fff;border:1px solid var(--line);margin:10px 0}
+  .card h2{margin:0;padding:4px 8px;background:linear-gradient(#e9f0f9,#c9daf0);border-bottom:1px solid var(--line);font-size:15px;color:#003366;font-weight:bold}
+  .list{margin:0;padding:6px 8px 6px 30px}
+  .list li{padding:4px 0;color:#00c;text-decoration:underline;font-size:15px}
+  .list li.go{cursor:pointer}
+  .note{font-size:14px;padding:6px 8px;background:var(--pale2)}
+  .btn{display:inline-block;border:1px solid #777;border-radius:2px;background:linear-gradient(#fdfdfd,#e6e6e6 50%,#cfcfcf);color:#000;padding:5px 14px;font-size:15px;cursor:pointer;font-family:inherit;min-height:32px}
+  .btn:active{background:linear-gradient(#cfcfcf,#e6e6e6 50%,#fdfdfd)}
+  .btn.gray{}
   .center{text-align:center}
   /* 設定頁 */
-  .opt{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid #eee;pointer-events:none}
-  .opt input{margin-top:5px;width:18px;height:18px;flex:none}
-  .row{padding:12px 14px;border-bottom:1px solid #eee;pointer-events:none;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .row select{font-size:15px;padding:4px}
+  .opt{display:flex;gap:6px;align-items:flex-start;padding:6px 8px;border-bottom:1px solid #d6e0ee;pointer-events:none}
+  .opt input{margin-top:3px;flex:none}
+  .row{padding:6px 8px;border-bottom:1px solid #d6e0ee;pointer-events:none;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .row select{font-size:14px}
   /* 測驗頁 */
-  .exambar{position:sticky;top:0;z-index:5;background:#123d6e;color:#fff;padding:8px 0;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-  .exambar .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
-  .timer{font-size:20px;font-weight:bold;background:#000;color:#3f3;padding:4px 12px;border-radius:4px;font-family:Consolas,monospace;letter-spacing:1px}
-  .timer.warn{color:#ff5252}
-  .tools{display:grid;grid-template-columns:repeat(5,auto);gap:6px}
-  .tools .btn{padding:8px 10px;font-size:15px;background:#fff;color:#123d6e;border-color:#fff}
-  .tools .btn.end{background:#ffeb3b;color:#000;border-color:#ffeb3b}
-  .qhead{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:10px 14px;background:#e3ebf5;border-bottom:1px solid var(--line);font-weight:bold;color:var(--blue-d)}
-  .qtext{padding:16px 14px 6px;font-size:18px}
-  .choices{padding:6px 14px 16px}
-  .choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:6px;padding:12px;margin:8px 0;cursor:pointer;background:#fafcff;user-select:none}
-  .choice.sel{background:#dcebff;border-color:var(--blue)}
-  .choice .box{flex:none;width:26px;height:26px;border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;color:var(--blue);border-radius:50%}
-  .choice.multi .box{border-radius:4px}
-  .choice.sel .box{background:var(--blue);color:#fff}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;padding:12px 14px}
-  .grid button{height:38px;border:1px solid var(--line);background:#fff;border-radius:4px;font-size:14px;cursor:pointer;font-family:inherit}
-  .grid button.done{background:#c8e6c9;border-color:#81c784}
+  .exambar{position:sticky;top:0;z-index:5;background:var(--pale);border-bottom:1px solid var(--line);padding:5px 0}
+  .exambar .wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between}
+  .timer{font-size:18px;font-weight:bold;color:var(--red);font-family:Arial,sans-serif}
+  .timer.warn{background:#ff0}
+  .tools{display:grid;grid-template-columns:repeat(5,auto);gap:4px}
+  .tools .btn{padding:4px 8px;font-size:14px}
+  .qhead{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:4px 8px;background:linear-gradient(#e9f0f9,#c9daf0);border-bottom:1px solid var(--line);font-weight:bold;color:#003366}
+  .qtext{padding:10px 8px 4px;font-size:17px}
+  .choices{padding:2px 8px 10px}
+  .choice{display:flex;gap:6px;align-items:flex-start;padding:7px 4px;border-bottom:1px dotted #bbb;cursor:pointer;user-select:none;font-size:16px}
+  .choice.sel{background:#ffffcc}
+  .choice .box{flex:none;width:16px;height:16px;margin-top:3px;border:1px solid #555;border-radius:50%;background:#fff;position:relative}
+  .choice.multi .box{border-radius:0}
+  .choice.sel .box::after{content:"";position:absolute;inset:3px;background:#000;border-radius:50%}
+  .choice.multi.sel .box::after{content:"✓";inset:auto;left:1px;top:-4px;background:none;font-size:14px;font-weight:bold}
+  .choice .lab{flex:none;font-weight:bold}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:2px;padding:6px 8px}
+  .grid button{height:30px;border:1px solid #999;background:linear-gradient(#fdfdfd,#ddd);border-radius:0;font-size:13px;cursor:pointer;font-family:Arial,sans-serif}
+  .grid button.done{background:#9cf}
   .grid button.cur{outline:2px solid var(--red);font-weight:bold}
   /* 成績頁 */
-  .res-title{text-align:center;padding:18px 10px 6px}
-  .res-title h1{margin:0;font-size:clamp(24px,6vw,32px);color:var(--blue-d)}
-  .res-title p{margin:6px 0 0;font-size:clamp(14px,3.8vw,18px);color:#333}
-  .tblwrap{overflow-x:auto;padding:12px}
-  table.score{width:100%;border-collapse:collapse;min-width:420px;font-size:16px}
-  table.score th,table.score td{border:1px solid #9fb3c8;padding:10px 6px;text-align:center}
-  table.score th{background:#dbe6f3;color:#123d6e}
-  table.score tr.total td{background:#fff6d6;font-weight:bold}
-  table.score .big{font-size:22px;color:var(--red)}
-  .pass{text-align:center;font-size:20px;font-weight:bold;color:var(--green);padding:4px 0 14px}
-  .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:8px 14px 20px}
-  .rv{padding:12px 14px;border-bottom:1px solid #eee}
+  .res-title{text-align:center;padding:10px 8px 4px}
+  .res-title h1{margin:0;font-size:24px;color:#003}
+  .res-title p{margin:4px 0 0;font-size:16px;color:#036}
+  .demo{margin:6px 8px 0;padding:4px 8px;border:1px dashed var(--red);color:var(--red);background:#fff4f4;text-align:center;font-size:14px;font-weight:bold}
+  .tblwrap{padding:8px;position:relative;overflow:hidden}
+  .tblwrap::after{content:"DEMO 示範資料";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:bold 44px Arial,sans-serif;color:rgba(204,0,0,.13);transform:rotate(-12deg);pointer-events:none;white-space:nowrap}
+  table.score{width:100%;border-collapse:collapse;font-size:15px}
+  table.score th,table.score td{border:1px solid #666;padding:6px 4px;text-align:center}
+  table.score th{background:var(--pale)}
+  table.score tr.total td{background:#ffc;font-weight:bold}
+  table.score .big{color:var(--red)}
+  .pass{text-align:center;font-size:18px;font-weight:bold;color:var(--red);padding:2px 0 8px}
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:4px 8px 12px}
+  .rv{padding:6px 8px;border-bottom:1px solid #d6e0ee}
   .rv .ok{color:var(--green);font-weight:bold}
   .rv .ng{color:var(--red);font-weight:bold}
-  footer{text-align:center;color:#888;font-size:12px;padding:20px 0 30px}
+  footer{text-align:center;color:#555;font-size:12px;padding:12px 0 20px;border-top:1px solid var(--line);margin-top:10px}
   @media (max-width:600px){
     .tools{grid-template-columns:repeat(5,1fr);width:100%}
-    .tools .btn{padding:8px 2px;font-size:13px}
+    .tools .btn{padding:6px 0;font-size:13px;min-height:36px}
     .exambar .wrap{justify-content:center}
-    .qtext{font-size:17px}
-    .tblwrap{padding:12px 8px}
-    table.score{min-width:0;font-size:14px}
-    table.score th,table.score td{padding:8px 2px}
+    .navbar span{padding:6px 8px;font-size:13px}
+    table.score{font-size:14px}
+    table.score th,table.score td{padding:6px 1px}
     table.score th{font-size:13px}
+    .tblwrap::after{font-size:30px}
   }
 </style>
 </head>
@@ -84,6 +89,7 @@
 
 <!-- ===== 首頁 ===== -->
 <section id="v-home" class="view on">
+<nav class="navbar"><div class="wrap"><span>乙級學科題庫</span><span>電腦硬體裝修</span><span>線上複習</span><span>系統說明</span></div></nav>
   <header class="top">
     <h1>乙級學科題庫線上測驗</h1>
     <p>乙級【電腦硬體裝修】學科(120002)測驗</p>
@@ -134,6 +140,7 @@
 
 <!-- ===== 設定頁 ===== -->
 <section id="v-setup" class="view">
+<nav class="navbar"><div class="wrap"><span>乙級學科題庫</span><span>電腦硬體裝修</span><span>線上複習</span><span>系統說明</span></div></nav>
   <header class="top">
     <h1>測驗設定</h1>
     <p>模擬乙檢測驗（單選60題、複選20題，共80題）</p>
@@ -185,12 +192,14 @@
 
 <!-- ===== 成績頁 ===== -->
 <section id="v-result" class="view">
+<nav class="navbar"><div class="wrap"><span>乙級學科題庫</span><span>電腦硬體裝修</span><span>線上複習</span><span>系統說明</span></div></nav>
   <div class="wrap">
     <div class="card">
       <div class="res-title">
         <h1>測驗結果</h1>
         <p>電腦硬體裝修乙級檢科線上模擬測驗系統</p>
       </div>
+      <div class="demo">前端介面練習 · 以下為固定示範資料（Mock Data），非實際作答成績</div>
       <div class="tblwrap">
         <table class="score">
           <thead><tr><th>題型</th><th>題數</th><th>回答題數</th><th>正確</th><th>分/題</th><th>單元分數</th></tr></thead>
@@ -272,7 +281,7 @@
     q.o.forEach(function(txt, i){
       var d = document.createElement('div');
       d.className = 'choice' + (multi ? ' multi' : '') + (answers[cur].indexOf(i) >= 0 ? ' sel' : '');
-      d.innerHTML = '<span class="box">' + L[i] + '</span><span></span>';
+      d.innerHTML = '<span class="box"></span><span class="lab">(' + L[i] + ')</span><span></span>';
       d.lastChild.textContent = txt;
       d.onclick = function(){ pick(i); };
       box.appendChild(d);

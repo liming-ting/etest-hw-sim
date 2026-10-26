@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>乙級學科題庫線上測驗</title>
+<style>
+  :root{--blue:#1f5fa8;--blue-d:#174a84;--bg:#eef2f6;--line:#d5dce5;--text:#222;--muted:#666;--red:#c62828;--green:#2e7d32}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+  .view{display:none}.view.on{display:block}
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px}
+  header.top{background:linear-gradient(180deg,#2a6fbe,var(--blue-d));color:#fff;padding:22px 0 18px;text-align:center}
+  header.top h1{margin:0;font-size:clamp(22px,5vw,30px);letter-spacing:2px}
+  header.top p{margin:6px 0 0;font-size:clamp(14px,3.6vw,18px);opacity:.95}
+  .card{background:#fff;border:1px solid var(--line);border-radius:8px;margin:16px 0;overflow:hidden}
+  .card h2{margin:0;padding:10px 14px;background:#e3ebf5;border-bottom:1px solid var(--line);font-size:17px;color:var(--blue-d)}
+  .list{list-style:none;margin:0;padding:0}
+  .list li{padding:12px 14px;border-bottom:1px dashed var(--line);color:#1a4f8b;font-size:15px}
+  .list li:last-child{border-bottom:0}
+  .list li.go{cursor:pointer;font-weight:bold;color:#0d47a1;background:#fffbe6}
+  .list li.go:active{background:#ffefb0}
+  .note{font-size:13px;color:var(--muted);padding:10px 14px}
+  .btn{display:inline-block;border:1px solid var(--blue-d);background:var(--blue);color:#fff;border-radius:6px;padding:10px 18px;font-size:16px;cursor:pointer;font-family:inherit;min-height:44px}
+  .btn:active{background:var(--blue-d)}
+  .btn.gray{background:#fff;color:var(--blue-d)}
+  .btn.red{background:var(--red);border-color:#9b1c1c}
+  .center{text-align:center}
+  /* 設定頁 */
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid #eee;pointer-events:none}
+  .opt input{margin-top:5px;width:18px;height:18px;flex:none}
+  .row{padding:12px 14px;border-bottom:1px solid #eee;pointer-events:none;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .row select{font-size:15px;padding:4px}
+  /* 測驗頁 */
+  .exambar{position:sticky;top:0;z-index:5;background:#123d6e;color:#fff;padding:8px 0;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+  .exambar .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+  .timer{font-size:20px;font-weight:bold;background:#000;color:#3f3;padding:4px 12px;border-radius:4px;font-family:Consolas,monospace;letter-spacing:1px}
+  .timer.warn{color:#ff5252}
+  .tools{display:grid;grid-template-columns:repeat(5,auto);gap:6px}
+  .tools .btn{padding:8px 10px;font-size:15px;background:#fff;color:#123d6e;border-color:#fff}
+  .tools .btn.end{background:#ffeb3b;color:#000;border-color:#ffeb3b}
+  .qhead{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:10px 14px;background:#e3ebf5;border-bottom:1px solid var(--line);font-weight:bold;color:var(--blue-d)}
+  .qtext{padding:16px 14px 6px;font-size:18px}
+  .choices{padding:6px 14px 16px}
+  .choice{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:6px;padding:12px;margin:8px 0;cursor:pointer;background:#fafcff;user-select:none}
+  .choice.sel{background:#dcebff;border-color:var(--blue)}
+  .choice .box{flex:none;width:26px;height:26px;border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;font-weight:bold;color:var(--blue);border-radius:50%}
+  .choice.multi .box{border-radius:4px}
+  .choice.sel .box{background:var(--blue);color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;padding:12px 14px}
+  .grid button{height:38px;border:1px solid var(--line);background:#fff;border-radius:4px;font-size:14px;cursor:pointer;font-family:inherit}
+  .grid button.done{background:#c8e6c9;border-color:#81c784}
+  .grid button.cur{outline:2px solid var(--red);font-weight:bold}
+  /* 成績頁 */
+  .res-title{text-align:center;padding:18px 10px 6px}
+  .res-title h1{margin:0;font-size:clamp(24px,6vw,32px);color:var(--blue-d)}
+  .res-title p{margin:6px 0 0;font-size:clamp(14px,3.8vw,18px);color:#333}
+  .tblwrap{overflow-x:auto;padding:12px}
+  table.score{width:100%;border-collapse:collapse;min-width:420px;font-size:16px}
+  table.score th,table.score td{border:1px solid #9fb3c8;padding:10px 6px;text-align:center}
+  table.score th{background:#dbe6f3;color:#123d6e}
+  table.score tr.total td{background:#fff6d6;font-weight:bold}
+  table.score .big{font-size:22px;color:var(--red)}
+  .pass{text-align:center;font-size:20px;font-weight:bold;color:var(--green);padding:4px 0 14px}
+  .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:8px 14px 20px}
+  .rv{padding:12px 14px;border-bottom:1px solid #eee}
+  .rv .ok{color:var(--green);font-weight:bold}
+  .rv .ng{color:var(--red);font-weight:bold}
+  footer{text-align:center;color:#888;font-size:12px;padding:20px 0 30px}
+  @media (max-width:600px){
+    .tools{grid-template-columns:repeat(5,1fr);width:100%}
+    .tools .btn{padding:8px 2px;font-size:13px}
+    .exambar .wrap{justify-content:center}
+    .qtext{font-size:17px}
+    .tblwrap{padding:12px 8px}
+    table.score{min-width:0;font-size:14px}
+    table.score th,table.score td{padding:8px 2px}
+    table.score th{font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 首頁 ===== -->
+<section id="v-home" class="view on">
+  <header class="top">
+    <h1>乙級學科題庫線上測驗</h1>
+    <p>乙級【電腦硬體裝修】學科(120002)測驗</p>
+  </header>
+  <div class="wrap">
+    <div class="card">
+      <h2>測驗說明</h2>
+      <div class="note">本系統題庫依據技能檢定學科測試題庫編製，提供考生線上練習。測驗結束後可觀看答題結果。<br>建議使用 Chrome、Edge、Safari 等瀏覽器，並支援手機與平板作答。</div>
+    </div>
+    <div class="card">
+      <h2>分類測驗（依工作項目）</h2>
+      <ul class="list">
+        <li>工作項目 01：識圖與繪圖</li>
+        <li>工作項目 02：零件之識別與規格</li>
+        <li>工作項目 03：儀表之使用</li>
+        <li>工作項目 04：電腦硬體組裝與調校</li>
+        <li>工作項目 05：作業系統安裝與設定</li>
+        <li>工作項目 06：網路設定與維護</li>
+        <li>工作項目 07：電腦系統故障排除</li>
+        <li>工作項目 08：週邊設備維護</li>
+        <li>工作項目 09：資訊安全</li>
+        <li>工作項目 10：職業安全衛生</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>共同科目</h2>
+      <ul class="list">
+        <li>90006 職業安全衛生共同科目</li>
+        <li>90007 工作倫理與職業道德共同科目</li>
+        <li>90008 環境保護共同科目</li>
+        <li>90009 節能減碳共同科目</li>
+        <li>90011 資訊相關職類共用工作項目</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>不分類測驗</h2>
+      <ul class="list">
+        <li class="go" id="goMock">模擬乙檢測驗（電腦硬體裝修選擇773題 + 資訊類共同科目119題，共892題，挑選80題：單選60題、複選20題）</li>
+        <li>全部題目測驗（電腦硬體裝修選擇773題）</li>
+        <li>隨機 50 題練習</li>
+        <li>隨機 100 題練習</li>
+        <li>錯題複習</li>
+      </ul>
+    </div>
+  </div>
+  <footer>乙級學科題庫線上測驗 · 模擬練習系統</footer>
+</section>
+
+<!-- ===== 設定頁 ===== -->
+<section id="v-setup" class="view">
+  <header class="top">
+    <h1>測驗設定</h1>
+    <p>模擬乙檢測驗（單選60題、複選20題，共80題）</p>
+  </header>
+  <div class="wrap">
+    <div class="card">
+      <h2>作答畫面</h2>
+      <label class="opt"><input type="radio" name="mode" checked><span>勞動署技檢中心即測即評模擬畫面 (一頁一題)</span></label>
+      <label class="opt"><input type="radio" name="mode"><span>一般練習畫面 (一頁多題)</span></label>
+      <label class="opt"><input type="radio" name="mode"><span>背誦模式 (直接顯示答案)</span></label>
+    </div>
+    <div class="card">
+      <h2>其他設定</h2>
+      <div class="row">測驗時間：<select><option>80 分鐘</option></select></div>
+      <div class="row"><label><input type="checkbox" checked> 題目隨機排列</label></div>
+      <div class="row"><label><input type="checkbox"> 選項隨機排列</label></div>
+      <div class="row"><label><input type="checkbox"> 作答後立即顯示正確答案</label></div>
+    </div>
+    <div class="center" style="padding:10px 0 30px"><button class="btn" id="btnNext" style="min-width:180px">下一步</button></div>
+  </div>
+</section>
+
+<!-- ===== 測驗頁 ===== -->
+<section id="v-exam" class="view">
+  <div class="exambar">
+    <div class="wrap">
+      <div>剩餘時間 <span class="timer" id="timer">80:00</span></div>
+      <div class="tools">
+        <button class="btn end" id="bEnd">提前結束</button>
+        <button class="btn" id="bUn">查詢未答</button>
+        <button class="btn" id="bPrev">上一題</button>
+        <button class="btn" id="bNext">下一題</button>
+        <button class="btn" id="bCancel">取消作答</button>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="card">
+      <div class="qhead"><span id="qno"></span><span id="qtype"></span></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="choices" id="choices"></div>
+    </div>
+    <div class="card">
+      <h2>題號一覽（綠色為已作答）</h2>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 成績頁 ===== -->
+<section id="v-result" class="view">
+  <div class="wrap">
+    <div class="card">
+      <div class="res-title">
+        <h1>測驗結果</h1>
+        <p>電腦硬體裝修乙級檢科線上模擬測驗系統</p>
+      </div>
+      <div class="tblwrap">
+        <table class="score">
+          <thead><tr><th>題型</th><th>題數</th><th>回答題數</th><th>正確</th><th>分/題</th><th>單元分數</th></tr></thead>
+          <tbody>
+            <tr><td>單選題</td><td>60</td><td>60</td><td>52</td><td>1</td><td>52</td></tr>
+            <tr><td>複選題</td><td>20</td><td>20</td><td>14</td><td>2</td><td>28</td></tr>
+            <tr class="total"><td>總計</td><td>80</td><td>80</td><td>66</td><td>—</td><td class="big">80</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pass">總分：80 分</div>
+      <div class="actions">
+        <button class="btn" id="bReview">觀看答題結果</button>
+        <button class="btn gray" id="bClose">關閉視窗</button>
+      </div>
+    </div>
+    <div class="card" id="review" style="display:none">
+      <h2>答題結果</h2>
+      <div id="rvlist"></div>
+    </div>
+  </div>
+</section>
+
+<script src="questions.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var L = 'ABCDEFGH';
+  var exam = [], answers = [], cur = 0, left = 0, tick = null;
+
+  function show(v){
+    document.querySelectorAll('.view').forEach(function(s){ s.classList.toggle('on', s.id === 'v-' + v); });
+    window.scrollTo(0, 0);
+  }
+  function shuffle(a){
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  $('goMock').onclick = function(){ show('setup'); };
+  $('btnNext').onclick = startExam;
+
+  function startExam(){
+    var s = shuffle(QBANK.filter(function(q){ return q.t === 's'; })).slice(0, 60);
+    var m = shuffle(QBANK.filter(function(q){ return q.t === 'm'; }));
+    while (m.length < 20) m = m.concat(m); // 題庫不足時補足
+    exam = s.concat(m.slice(0, 20));
+    answers = exam.map(function(){ return []; });
+    cur = 0;
+    var grid = $('grid'); grid.innerHTML = '';
+    exam.forEach(function(_, i){
+      var b = document.createElement('button');
+      b.textContent = i + 1;
+      b.onclick = function(){ go(i); };
+      grid.appendChild(b);
+    });
+    show('exam');
+    render();
+    left = 80 * 60;
+    $('timer').textContent = fmt(left);
+    $('timer').classList.remove('warn');
+    clearInterval(tick);
+    var end = Date.now() + left * 1000;
+    tick = setInterval(function(){
+      left = Math.max(0, Math.round((end - Date.now()) / 1000));
+      $('timer').textContent = fmt(left);
+      if (left <= 300) $('timer').classList.add('warn');
+      if (left === 0) finish();
+    }, 1000);
+  }
+  function fmt(s){ var m = Math.floor(s / 60), x = s % 60; return (m < 10 ? '0' : '') + m + ':' + (x < 10 ? '0' : '') + x; }
+
+  function render(){
+    var q = exam[cur], multi = q.t === 'm';
+    $('qno').textContent = '第 ' + (cur + 1) + ' 題 / 共 ' + exam.length + ' 題';
+    $('qtype').textContent = multi ? '【複選題】' : '【單選題】';
+    $('qtext').textContent = (cur + 1) + '. ' + q.q;
+    var box = $('choices'); box.innerHTML = '';
+    q.o.forEach(function(txt, i){
+      var d = document.createElement('div');
+      d.className = 'choice' + (multi ? ' multi' : '') + (answers[cur].indexOf(i) >= 0 ? ' sel' : '');
+      d.innerHTML = '<span class="box">' + L[i] + '</span><span></span>';
+      d.lastChild.textContent = txt;
+      d.onclick = function(){ pick(i); };
+      box.appendChild(d);
+    });
+    var bs = $('grid').children;
+    for (var i = 0; i < bs.length; i++) {
+      bs[i].className = (answers[i].length ? 'done' : '') + (i === cur ? ' cur' : '');
+    }
+  }
+  function pick(i){
+    var a = answers[cur];
+    if (exam[cur].t === 's') answers[cur] = [i];
+    else { var k = a.indexOf(i); if (k >= 0) a.splice(k, 1); else a.push(i); a.sort(); }
+    render();
+  }
+  function go(i){ if (i < 0 || i >= exam.length) return; cur = i; render(); window.scrollTo(0, 0); }
+
+  $('bPrev').onclick = function(){ if (cur === 0) alert('已經是第一題'); else go(cur - 1); };
+  $('bNext').onclick = function(){ if (cur === exam.length - 1) alert('已經是最後一題'); else go(cur + 1); };
+  $('bUn').onclick = function(){
+    var un = [];
+    answers.forEach(function(a, i){ if (!a.length) un.push(i + 1); });
+    if (!un.length) { alert('所有題目皆已作答'); return; }
+    alert('尚未作答題號（共 ' + un.length + ' 題）：\n' + un.join(', '));
+    go(un[0] - 1);
+  };
+  $('bCancel').onclick = function(){
+    if (confirm('確定要取消作答並回到首頁嗎？')) { clearInterval(tick); show('home'); }
+  };
+  $('bEnd').onclick = finish;
+
+  function finish(){
+    clearInterval(tick);
+    $('review').style.display = 'none';
+    show('result');
+  }
+
+  $('bReview').onclick = function(){
+    var html = '';
+    exam.forEach(function(q, i){
+      var ua = answers[i], ok = ua.join() === q.ans.join();
+      var fmtA = function(arr){ return arr.length ? arr.map(function(x){ return L[x]; }).join('') : '未作答'; };
+      html += '<div class="rv"><div>' + (i + 1) + '. ' + (q.t === 'm' ? '【複選】' : '【單選】') + esc(q.q) + '</div>' +
+        '<div style="color:#555;font-size:14px">' + q.o.map(function(t, k){ return L[k] + '. ' + esc(t); }).join('　') + '</div>' +
+        '<div>您的答案：' + fmtA(ua) + '　正確答案：' + fmtA(q.ans) + '　<span class="' + (ok ? 'ok">○' : 'ng">✕') + '</span></div></div>';
+    });
+    $('rvlist').innerHTML = html;
+    $('review').style.display = 'block';
+    $('review').scrollIntoView({behavior: 'smooth'});
+  };
+  function esc(s){ return s.replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+
+  $('bClose').onclick = function(){
+    window.close();
+    // 非由程式開啟的分頁無法被關閉，改回首頁
+    setTimeout(function(){ show('home'); }, 150);
+  };
+})();
+</script>
+</body>
+</html>
